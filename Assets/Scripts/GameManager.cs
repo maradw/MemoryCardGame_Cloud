@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -23,6 +24,9 @@ public class GameManager : MonoBehaviour
     private int matches;
     private int totalMatches;
 
+
+    [SerializeField] GameObject _winPanel;
+
     //public AudioSource mainAudioSource;
     //public AudioSource audioSourceone;
     //public AudioSource audioSourcetwo;
@@ -32,6 +36,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        _winPanel.SetActive(false);
         totalMatches = cardPool.Length;
         for (int i = 0; i < cardPool.Length; i++)
         {
@@ -67,7 +72,7 @@ public class GameManager : MonoBehaviour
             buttons.Add(btn);
         }
         AddListeners();
-
+        
     }
     void AddListeners()
     {
@@ -135,7 +140,12 @@ public class GameManager : MonoBehaviour
         if (matches == totalMatches)
         {
             print("Win");
+            _winPanel.SetActive(true);
             //winPanel.gameObject.SetActive(true);
         }
+    }
+    void RestartGame()
+    {
+        SceneManager.LoadScene("SampleScene");
     }
 }
