@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-
+using DG.Tweening;
+//casisingletonxd
 public class GameManager : MonoBehaviour
 {
     public Sprite backcardSprite;
@@ -11,7 +12,7 @@ public class GameManager : MonoBehaviour
     public CardSO[] cardPool;
     public GameObject card;
     public GameObject cardField;
-    //public GameObject winPanel;
+  
     private List<GameObject> cards = new List<GameObject>();
     private List<Button> buttons = new List<Button>();
 
@@ -27,12 +28,14 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] GameObject _winPanel;
 
-    //public AudioSource mainAudioSource;
-    //public AudioSource audioSourceone;
-    //public AudioSource audioSourcetwo;
-    //public AudioClip goodAudio;
-    //public AudioClip wrongAudio;
+    [SerializeField] private AudioSource main;
+    [SerializeField] private AudioSource audioSourceone;
+    [SerializeField] private AudioSource audioSourcetwo;
+    [SerializeField] private AudioClip goodAudio;
+    [SerializeField] private AudioClip wrongAudio;
 
+    //PanelAnimation
+   
 
     void Start()
     {
@@ -108,6 +111,7 @@ public class GameManager : MonoBehaviour
         if (index == 2)
         {
             evaluating = true;
+            //waitaudio
             StartCoroutine(EvaluateCards());
         }
     }
@@ -125,7 +129,7 @@ public class GameManager : MonoBehaviour
                 matches++;
                 firstchoise.btn.interactable = false;
                 secondchoise.btn.interactable = false;
-                //mainAudioSource.PlayOneShot(goodAudio);
+                //main.PlayOneShot(goodAudio);
             }
         }
         else
@@ -140,12 +144,18 @@ public class GameManager : MonoBehaviour
         if (matches == totalMatches)
         {
             print("Win");
-            _winPanel.SetActive(true);
-            //winPanel.gameObject.SetActive(true);
+            
+          
         }
     }
     void RestartGame()
     {
         SceneManager.LoadScene("SampleScene");
+    }
+    void ShowWinPanel()
+    {
+        Transform winTransform = _winPanel.transform;
+        _winPanel.SetActive(true);
+        //_winPanel.
     }
 }

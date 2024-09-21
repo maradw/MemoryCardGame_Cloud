@@ -417,7 +417,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.9528302, g: 0.9387248, b: 0.78653437, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -459,8 +459,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.0000061989, y: -0.0000038147}
-  m_SizeDelta: {x: 530.4878, y: 223.4567}
+  m_AnchoredPosition: {x: -0.0000076294, y: -0.0000042319}
+  m_SizeDelta: {x: 439.2373, y: 301.8248}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1183247874
 GameObject:
@@ -615,6 +615,11 @@ MonoBehaviour:
   card: {fileID: 5023686307778094297, guid: e5d1e0320b5e4b147b1874024fc1868d, type: 3}
   cardField: {fileID: 1183247874}
   _winPanel: {fileID: 1134379827}
+  main: {fileID: 0}
+  audioSourceone: {fileID: 0}
+  audioSourcetwo: {fileID: 0}
+  goodAudio: {fileID: 0}
+  wrongAudio: {fileID: 0}
 --- !u!1 &2107675070
 GameObject:
   m_ObjectHideFlags: 0
