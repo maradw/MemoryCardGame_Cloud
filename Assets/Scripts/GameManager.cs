@@ -31,11 +31,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] private AudioSource main;
     [SerializeField] private AudioSource audioSourceone;
     [SerializeField] private AudioSource audioSourcetwo;
-    [SerializeField] private AudioClip goodAudio;
+    [SerializeField] private AudioClip correctAudio;
     [SerializeField] private AudioClip wrongAudio;
 
     //PanelAnimation
-   
+    [SerializeField] private GridLayoutGroup _panelCards;
 
     void Start()
     {
@@ -99,13 +99,13 @@ public class GameManager : MonoBehaviour
             {
                 firstGuess = true;
                 firstchoise = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.GetComponent<Card>();
-                //audioSourceone.Play();
+                audioSourceone.Play();
             }
             else if (!secondGuess)
             {
                 secondGuess = true;
                 secondchoise = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.GetComponent<Card>();
-                //audioSourcetwo.Play();
+                audioSourcetwo.Play();
             }
         }
         if (index == 2)
@@ -129,14 +129,14 @@ public class GameManager : MonoBehaviour
                 matches++;
                 firstchoise.btn.interactable = false;
                 secondchoise.btn.interactable = false;
-                //main.PlayOneShot(goodAudio);
+                main.PlayOneShot(correctAudio);
             }
         }
         else
         {
             firstchoise.Flip();
             secondchoise.Flip();
-            //mainAudioSource.PlayOneShot(wrongAudio);
+            main.PlayOneShot(wrongAudio);
         }
         index = 0;
         evaluating = false;
@@ -144,8 +144,8 @@ public class GameManager : MonoBehaviour
         if (matches == totalMatches)
         {
             print("Win");
-            
-          
+            ShowWinPanel();
+          //_panelCards.constraint.
         }
     }
     void RestartGame()
@@ -156,6 +156,6 @@ public class GameManager : MonoBehaviour
     {
         Transform winTransform = _winPanel.transform;
         _winPanel.SetActive(true);
-        //_winPanel.
+
     }
 }

@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Card4
   m_EditorClassIdentifier: 
   index: 4
-  sprite: {fileID: 21300000, guid: 6417970e724234447add737d23e82fc0, type: 3}
+  sprite: {fileID: 21300000, guid: fabeb32942891d147b7c276d76fde26c, type: 3}
