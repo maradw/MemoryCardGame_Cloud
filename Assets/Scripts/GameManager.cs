@@ -25,6 +25,8 @@ public class GameManager : MonoBehaviour
     private int matches;
     private int totalMatches;
 
+    [SerializeField] private ProgressData progressData;
+
 
     [SerializeField] GameObject _winPanel;
 
@@ -36,6 +38,26 @@ public class GameManager : MonoBehaviour
 
     //PanelAnimation
     [SerializeField] private GridLayoutGroup _panelCards;
+
+    public void SaveProgress()
+    {
+        string json = JsonUtility.ToJson(progressData);
+        SaveData.Save("progressdata.json", json);
+        print("data saved");
+    }
+
+    void OnGUI()
+    {
+        if (GUI.Button(new Rect(10, 10, 150, 100), "Save Progress"))
+        {
+            SaveProgress();
+        }
+    }
+
+    public void LoadProgress()
+    {
+        progressData = JsonUtility.FromJson<ProgressData>(SaveData.Load("progressdata2.json"));
+    }
 
     void Start()
     {
