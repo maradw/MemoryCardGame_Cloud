@@ -1,21 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using DG.Tweening;
-//casisingletonxd
-public class GameManager : MonoBehaviour
+using UnityEngine.UI;
+using UnityEngine.Networking;
+
+/*public class GameManager143 : MonoBehaviour
 {
     public Sprite backcardSprite;
     private bool firstGuess, secondGuess;
-    public CardSO[] cardPool;
+    public CardInfoSO[] cardPool;
     public GameObject card;
     public GameObject cardField;
-  
+    public GameObject winPanel;
     private List<GameObject> cards = new List<GameObject>();
     private List<Button> buttons = new List<Button>();
-
 
     private int index;
     private Card firstchoise;
@@ -24,45 +23,25 @@ public class GameManager : MonoBehaviour
 
     private int matches;
     private int totalMatches;
+    //added
+    private int fallos; // Número de fallos
+    private int gameId; // ID único de la partida
 
-    [SerializeField] private ProgressData progressData;
-
-
-    [SerializeField] GameObject _winPanel;
-
-    [SerializeField] private AudioSource main;
-    [SerializeField] private AudioSource audioSourceone;
-    [SerializeField] private AudioSource audioSourcetwo;
-    [SerializeField] private AudioClip correctAudio;
-    [SerializeField] private AudioClip wrongAudio;
-
-    //PanelAnimation
-    [SerializeField] private GridLayoutGroup _panelCards;
-
-    public void SaveProgress()
-    {
-        string json = JsonUtility.ToJson(progressData);
-        SaveData.Save("progressdata.json", json);
-        print("data saved");
-    }
-
-    void OnGUI()
-    {
-        if (GUI.Button(new Rect(10, 10, 150, 100), "Save Progress"))
-        {
-            SaveProgress();
-        }
-    }
-
-    public void LoadProgress()
-    {
-        progressData = JsonUtility.FromJson<ProgressData>(SaveData.Load("progressdata2.json"));
-    }
+    public AudioSource mainAudioSource;
+    public AudioClip audioSourceone;
+    public AudioClip audioSourcetwo;
+    public AudioClip goodAudio;
+    public AudioClip wrongAudio;
 
     void Start()
     {
-        _winPanel.SetActive(false);
+        // Genera un ID único para la partida
+        gameId = UnityEngine.Random.Range(1000, 9999);
+
         totalMatches = cardPool.Length;
+        fallos = 0;
+
+        // Crear las cartas
         for (int i = 0; i < cardPool.Length; i++)
         {
             for (int l = 0; l < 2; l++)
@@ -73,32 +52,39 @@ public class GameManager : MonoBehaviour
                 cards.Add(go);
             }
         }
-        List<GameObject> cardscopy = new List<GameObject>();
+
+        // Mezclar las cartas
+        ShuffleCards();
+
+        // Asignar botones
+        foreach (var cardObj in cards)
+        {
+            Button btn = cardObj.gameObject.GetComponent<Button>();
+            buttons.Add(btn);
+        }
+
+        AddListeners();
+    }
+
+    void ShuffleCards()
+    {
+        List<GameObject> cardscopy = new List<GameObject>(cards);
         List<GameObject> displaycards = new List<GameObject>();
 
-        for (int i = 0; i < cards.Count; i++)
-        {
-            cardscopy.Add(cards[i]);
-        }
-        for (int i = 0; i < cards.Count; i++)
+        while (cardscopy.Count > 0)
         {
             int x = UnityEngine.Random.Range(0, cardscopy.Count);
             displaycards.Add(cardscopy[x]);
             cardscopy.RemoveAt(x);
         }
+
         for (int i = 0; i < cards.Count; i++)
         {
             cards[i] = displaycards[i];
             cards[i].transform.SetSiblingIndex(i);
         }
-        for (int i = 0; i < cards.Count; i++)
-        {
-            Button btn = cards[i].gameObject.GetComponent<Button>();
-            buttons.Add(btn);
-        }
-        AddListeners();
-        
     }
+
     void AddListeners()
     {
         foreach (Button btn in buttons)
@@ -113,6 +99,7 @@ public class GameManager : MonoBehaviour
         {
             return;
         }
+
         if (index < 2)
         {
             index++;
@@ -121,19 +108,19 @@ public class GameManager : MonoBehaviour
             {
                 firstGuess = true;
                 firstchoise = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.GetComponent<Card>();
-                audioSourceone.Play();
+                mainAudioSource.PlayOneShot(audioSourceone);
             }
             else if (!secondGuess)
             {
                 secondGuess = true;
                 secondchoise = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.GetComponent<Card>();
-                audioSourcetwo.Play();
+                mainAudioSource.PlayOneShot(audioSourcetwo);
             }
         }
+
         if (index == 2)
         {
             evaluating = true;
-            //waitaudio
             StartCoroutine(EvaluateCards());
         }
     }
@@ -142,42 +129,70 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(1.5f);
         firstGuess = secondGuess = false;
+
         if (firstchoise.Index() == secondchoise.Index() && firstchoise.GetInstanceID() != secondchoise.GetInstanceID())
         {
-            if (!firstchoise.IsPared() && !secondchoise.IsPared())
+           // if (!firstchoise.IsPaired() && !secondchoise.IsPaired())
             {
                 firstchoise.SetPair();
                 secondchoise.SetPair();
                 matches++;
                 firstchoise.btn.interactable = false;
                 secondchoise.btn.interactable = false;
-                main.PlayOneShot(correctAudio);
+                mainAudioSource.PlayOneShot(goodAudio);
             }
         }
         else
         {
+            fallos++; // Incrementa el contador de fallos
+            mainAudioSource.PlayOneShot(wrongAudio);
             firstchoise.Flip();
             secondchoise.Flip();
-            main.PlayOneShot(wrongAudio);
         }
+
         index = 0;
         evaluating = false;
 
         if (matches == totalMatches)
         {
             print("Win");
-            ShowWinPanel();
-          //_panelCards.constraint.
+            winPanel.gameObject.SetActive(true);
+
+            // Calcular el tiempo total y enviar datos
+            float totalTiempo = Time.timeSinceLevelLoad;
+            StartCoroutine(SendGameData(gameId, totalTiempo, fallos));
         }
     }
-    void RestartGame()
+
+    public void RestartGame()
     {
         SceneManager.LoadScene("SampleScene");
     }
-    void ShowWinPanel()
-    {
-        Transform winTransform = _winPanel.transform;
-        _winPanel.SetActive(true);
 
+    public IEnumerator SendGameData(int gameId, float tiempo, int fallos)
+    {
+        string url = "http://localhost/save_card_game_data.php"; // Cambia a la URL de tu servidor PHP
+
+        WWWForm form = new WWWForm();
+        form.AddField("game_id", gameId);            // ID de la partida
+        form.AddField("tiempo", tiempo.ToString()); // Tiempo total en segundos
+        form.AddField("fallos", fallos);            // Número de fallos
+
+        using (UnityWebRequest www = UnityWebRequest.Post(url, form))
+        {
+            yield return www.SendWebRequest();
+
+            if (www.result == UnityWebRequest.Result.Success)
+            {
+                Debug.Log("Game data uploaded successfully: " + www.downloadHandler.text);
+            }
+            else
+            {
+                Debug.LogError("Failed to upload game data: " + www.error);
+            }
+        }
     }
+   
+
 }
+*/
