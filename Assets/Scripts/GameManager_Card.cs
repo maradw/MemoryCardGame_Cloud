@@ -47,13 +47,14 @@ public class GameManager : MonoBehaviour
     //newwwwwwwww
     [HeaderAttribute(" Time ID")]
     public int bestCardTime = 0;
-    public int user_id = 1; // ID del usuario
+    public int user_id = 0; // ID del usuario
     private string scoreUrl = "http://localhost/insert_cardgame.php";
 
 
-    
-    
-     
+    /// <summary> new2 no se q es sumaryxd
+    private string loginUrl = "http://localhost/UserLogin2.php";
+    /// </summary>
+
 
     public class GameTime
     {
@@ -133,7 +134,10 @@ public class GameManager : MonoBehaviour
     }
     void Start()
     {
-////////
+        ////////
+        
+
+        ///////
         gameTime = new GameTime();
         gameTime.user_id = user_id; // Asigna un valor inicial si lo tienes.
         gameTime.best_card_time = 0;
