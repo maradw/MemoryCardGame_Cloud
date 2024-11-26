@@ -52,14 +52,29 @@ public class GameManager : MonoBehaviour
 
 
     /// <summary> new2 no se q es sumaryxd
-    private string loginUrl = "http://localhost/UserLogin2.php";
+  // private string loginUrl = "http://localhost/UserLogin2.php";
     /// </summary>
+    /// 
+
+  
+    public void ReceiveID(string id)
+    {
+        if (int.TryParse(id, out int parsedId)) // Asegurarnos de que el ID es válido
+        {
+            user_id = parsedId;
+            Debug.Log("Received user ID: " + user_id);
+        }
+        else
+        {
+            Debug.LogError("Invalid user ID received: " + id);
+        }
+    }
 
 
     public class GameTime
     {
-        public int user_id; // ID del usuario
-        public int best_card_time; // Puntaje o tiempo del juego (ejemplo: mejor tiempo en el juego de cartas)
+        public int user_id;
+        public int best_card_time; 
     }
 
     [SerializeField] private GameTime gameTime;
@@ -100,9 +115,9 @@ public class GameManager : MonoBehaviour
             }
         }
     }
-    public void SetUserID(int id)
+    public void SetUserID()
     {
-        gameTime.user_id = id;
+        gameTime.user_id = user_id;
         Debug.Log("User ID set to: " + gameTime.user_id);
     }
 
@@ -255,36 +270,13 @@ public class GameManager : MonoBehaviour
             _finalTimeText.text = "Your time: " + minutes + ":" + seconds;
             bestCardTime = Mathf.CeilToInt(timer);
 
-            StartCoroutine(FetchUserID());
-            //_panelCards.constraint.
+            //StartCoroutine(FetchUserID());
             SetBestCardTime(bestCardTime);
-            SetUserID(user_id);
+            SetUserID();
             InsertScore();
         }
     }
-    private IEnumerator FetchUserID()
-    {
-
-            // Si no está en PlayerPrefs, puedes realizar una petición al servidor
-            UnityWebRequest request = UnityWebRequest.Get(loginUrl);
-            yield return request.SendWebRequest();
-
-            if (request.result == UnityWebRequest.Result.Success)
-            {
-                var jsonResponse = JsonUtility.FromJson<ServerResponse>(request.downloadHandler.text);
-                if (jsonResponse.user_id > 0)
-                {
-                    user_id = jsonResponse.user_id;
-
-                    Debug.Log("User ID fetched and saved: " + user_id);
-                }
-            }
-            else
-            {
-                Debug.LogError("Error fetching user ID: " + request.error);
-            }
-        
-    }
+ 
     void RestartGame()
     {
         SceneManager.LoadScene("SampleScene");
@@ -301,9 +293,31 @@ public class ServerResponseCard
 {
     public string message;
 }
-[System.Serializable]
-public class ServerResponse
+
+/*public class ServerResponse
 {
     public int user_id;
     public string message;
-}
+}*/
+/*private IEnumerator FetchUserID()
+ {
+
+         UnityWebRequest request = UnityWebRequest.Get(loginUrl);
+         yield return request.SendWebRequest();
+
+         if (request.result == UnityWebRequest.Result.Success)
+         {
+             var jsonResponse = JsonUtility.FromJson<ServerResponse>(request.downloadHandler.text);
+             if (jsonResponse.user_id > 0)
+             {
+                 user_id = jsonResponse.user_id;
+
+                 Debug.Log("User ID fetched and saved: " + user_id);
+             }
+         }
+         else
+         {
+             Debug.LogError("Error fetching user ID: " + request.error);
+         }
+
+ }*/
