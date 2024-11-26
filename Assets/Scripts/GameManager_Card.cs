@@ -46,7 +46,7 @@ public class GameManager : MonoBehaviour
 
     //newwwwwwwww
     [HeaderAttribute(" Time ID")]
-    public int bestCardTime = 0;
+    public int bestCardTime;
     public int user_id = 0; // ID del usuario
     private string scoreUrl = "http://localhost/insert_cardgame.php";
 
@@ -102,14 +102,14 @@ public class GameManager : MonoBehaviour
     }
     public void SetUserID(int id)
     {
-        gameTime.user_id = 1;
+        gameTime.user_id = id;
         Debug.Log("User ID set to: " + gameTime.user_id);
     }
 
     public void SetBestCardTime(int time)
     {
        
-        gameTime.best_card_time = 0;
+        gameTime.best_card_time = time;
         Debug.Log("Best card time successfully set to: " + gameTime.best_card_time);
     }
 
@@ -139,7 +139,7 @@ public class GameManager : MonoBehaviour
 
         ///////
         gameTime = new GameTime();
-        gameTime.user_id = user_id; // Asigna un valor inicial si lo tienes.
+        gameTime.user_id = 0; // Asigna un valor inicial si lo tienes.
         gameTime.best_card_time = 0;
         ///////////
         _winPanel.SetActive(false);
@@ -255,12 +255,35 @@ public class GameManager : MonoBehaviour
             _finalTimeText.text = "Your time: " + minutes + ":" + seconds;
             bestCardTime = Mathf.CeilToInt(timer);
 
-
+            StartCoroutine(FetchUserID());
             //_panelCards.constraint.
             SetBestCardTime(bestCardTime);
             SetUserID(user_id);
             InsertScore();
         }
+    }
+    private IEnumerator FetchUserID()
+    {
+
+            // Si no está en PlayerPrefs, puedes realizar una petición al servidor
+            UnityWebRequest request = UnityWebRequest.Get(loginUrl);
+            yield return request.SendWebRequest();
+
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                var jsonResponse = JsonUtility.FromJson<ServerResponse>(request.downloadHandler.text);
+                if (jsonResponse.user_id > 0)
+                {
+                    user_id = jsonResponse.user_id;
+
+                    Debug.Log("User ID fetched and saved: " + user_id);
+                }
+            }
+            else
+            {
+                Debug.LogError("Error fetching user ID: " + request.error);
+            }
+        
     }
     void RestartGame()
     {
@@ -276,5 +299,11 @@ public class GameManager : MonoBehaviour
 [System.Serializable]
 public class ServerResponseCard
 {
+    public string message;
+}
+[System.Serializable]
+public class ServerResponse
+{
+    public int user_id;
     public string message;
 }
