@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
 using TMPro;
-//casisingletonxd
+
 using UnityEngine.Networking;
 public class GameManager : MonoBehaviour
 {
@@ -47,19 +47,13 @@ public class GameManager : MonoBehaviour
     //newwwwwwwww
     [HeaderAttribute(" Time ID")]
     public int bestCardTime;
-    public int user_id = 0; // ID del usuario
+    public int user_id = 0; 
     private string scoreUrl = "http://localhost/insert_cardgame.php";
 
-
-    /// <summary> new2 no se q es sumaryxd
-  // private string loginUrl = "http://localhost/UserLogin2.php";
-    /// </summary>
-    /// 
-
-  
     public void ReceiveID(string id)
     {
-        if (int.TryParse(id, out int parsedId)) // Asegurarnos de que el ID es válido
+        Debug.Log("ReceiveID called with id: " + id);
+        if (int.TryParse(id, out int parsedId)) 
         {
             user_id = parsedId;
             Debug.Log("Received user ID: " + user_id);
@@ -69,7 +63,6 @@ public class GameManager : MonoBehaviour
             Debug.LogError("Invalid user ID received: " + id);
         }
     }
-
 
     public class GameTime
     {
@@ -128,8 +121,6 @@ public class GameManager : MonoBehaviour
         Debug.Log("Best card time successfully set to: " + gameTime.best_card_time);
     }
 
-
-
     void CurrentTime()
     {
         if (isGameRunning)
@@ -147,16 +138,16 @@ public class GameManager : MonoBehaviour
         CurrentTime();
 
     }
+    private void Awake()
+    {
+        gameTime = new GameTime();
+        gameTime.user_id = 0;
+        gameTime.best_card_time = 0;
+        DontDestroyOnLoad(this);
+        SetUserID();
+    }
     void Start()
     {
-        ////////
-        
-
-        ///////
-        gameTime = new GameTime();
-        gameTime.user_id = 0; // Asigna un valor inicial si lo tienes.
-        gameTime.best_card_time = 0;
-        ///////////
         _winPanel.SetActive(false);
         totalMatches = cardPool.Length;
         for (int i = 0; i < cardPool.Length; i++)
@@ -193,7 +184,6 @@ public class GameManager : MonoBehaviour
             buttons.Add(btn);
         }
         AddListeners();
-        
     }
     void AddListeners()
     {
@@ -229,7 +219,6 @@ public class GameManager : MonoBehaviour
         if (index == 2)
         {
             evaluating = true;
-            //waitaudio
             StartCoroutine(EvaluateCards());
         }
     }
@@ -270,7 +259,6 @@ public class GameManager : MonoBehaviour
             _finalTimeText.text = "Your time: " + minutes + ":" + seconds;
             bestCardTime = Mathf.CeilToInt(timer);
 
-            //StartCoroutine(FetchUserID());
             SetBestCardTime(bestCardTime);
             SetUserID();
             InsertScore();
@@ -279,7 +267,9 @@ public class GameManager : MonoBehaviour
  
     void RestartGame()
     {
+        SetUserID();
         SceneManager.LoadScene("SampleScene");
+        
     }
     void ShowWinPanel()
     {
@@ -294,30 +284,3 @@ public class ServerResponseCard
     public string message;
 }
 
-/*public class ServerResponse
-{
-    public int user_id;
-    public string message;
-}*/
-/*private IEnumerator FetchUserID()
- {
-
-         UnityWebRequest request = UnityWebRequest.Get(loginUrl);
-         yield return request.SendWebRequest();
-
-         if (request.result == UnityWebRequest.Result.Success)
-         {
-             var jsonResponse = JsonUtility.FromJson<ServerResponse>(request.downloadHandler.text);
-             if (jsonResponse.user_id > 0)
-             {
-                 user_id = jsonResponse.user_id;
-
-                 Debug.Log("User ID fetched and saved: " + user_id);
-             }
-         }
-         else
-         {
-             Debug.LogError("Error fetching user ID: " + request.error);
-         }
-
- }*/
